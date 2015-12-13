@@ -77,7 +77,7 @@ APP.Main = (function() {
         story.innerHTML = html;
         story.addEventListener('click', onStoryClick.bind(this, details));
         story.classList.add('clickable');
-		
+
 
         // Tick down. When zero we can batch in the next load.
         storyLoadCount--;
@@ -253,40 +253,59 @@ APP.Main = (function() {
    * Does this really add anything? Can we do this kind
    * of work in a cheaper way?
    */
-  function colorizeAndScaleStories() {
+
+function colorizeAndScaleStories() {
 
     var storyElements = document.querySelectorAll('.story');
-	var mainPosition = main.getBoundingClientRect();
-	var height = main.offsetHeight;
-	
+    var height = main.offsetHeight;
+    var mainPosition = main.getBoundingClientRect();
+    var bodyPosition = document.body.getBoundingClientRect().top;
     // It does seem awfully broad to change all the
     // colors every time!
-    for (var s = 0; s < storyElements.length; s++) {
+    var story_array = [];
+    var score = [];
+    var title = [];
+    var scoreLocations_top = [];
+    var scoreLocation_width = [];
+    var saturation = [];
+    var viewportelements = [];
+    for (var s=0; s < storyElements.length; s++) {
+    	story_array.push(storyElements[s]);
+    	score.push(story_array[s].querySelector('.story__score'));
+    	title.push(story_array[s].querySelector('.story__title'));
+    	score_bounding_box = score[s].getBoundingClientRect();
+    	scoreLocations_top.push(score_bounding_box.top - bodyPosition);
+    	scoreLocation_width.push(score_bounding_box.width);
+    	saturation.push((100 * ((scoreLocation_width[s] - 38) / 2)));
+    	if (isElementInViewport(storyElements[s])) {
+    		viewportelements.push(storyElements[s]);
+    	}
+    }
+    console.log(viewportelements)
 
-      var story = storyElements[s];
-      var score = story.querySelector('.story__score');
-      var title = story.querySelector('.story__title');
+    for (var s = 0; s < storyElements.length; s++) {
+      //var score = story_array[s].querySelector('.story__score');
+      //var title = story_array[s].querySelector('.story__title');
 
       // Base the scale on the y position of the score.
-      
-      
-      var scoreLocation = score.getBoundingClientRect().top -
-          document.body.getBoundingClientRect().top;
-      var scale = Math.min(1, 1 - (0.05 * ((scoreLocation - 170) / height)));
-      var opacity = Math.min(1, 1 - (0.5 * ((scoreLocation - 170) / height)));
 
-      score.style.width = (scale * 40) + 'px';
-      score.style.height = (scale * 40) + 'px';
-      score.style.lineHeight = (scale * 40) + 'px';
+      //var scoreLocation = score[s].getBoundingClientRect().top - bodyPosition;
+      var scale = Math.min(1, 1 - (0.05 * ((scoreLocations_top[s] - 170) / height)));
+      var opacity = Math.min(1, 1 - (0.5 * ((scoreLocations_top[s] - 170) / height)));
+
+      score[s].style.width = (scale * 40) + 'px';
+      score[s].style.height = (scale * 40) + 'px';
+      score[s].style.lineHeight = (scale * 40) + 'px';
 
       // Now figure out how wide it is and use that to saturate it.
-      scoreLocation = score.getBoundingClientRect();
-      var saturation = (100 * ((scoreLocation.width - 38) / 2));
+      //scoreLocation = score[s].getBoundingClientRect();
+      //var saturation = (100 * ((scoreLocation_width[s] - 38) / 2));
 
-      score.style.backgroundColor = 'hsl(42, ' + saturation + '%, 50%)';
-      title.style.opacity = opacity;
+      score[s].style.backgroundColor = 'hsl(42, ' + saturation[s] + '%, 50%)';
+      title[s].style.opacity = opacity;
     }
   }
+
 
   main.addEventListener('touchstart', function(evt) {
 
@@ -310,10 +329,9 @@ APP.Main = (function() {
     header.style.height = (156 - scrollTopCapped) + 'px';
     headerTitles.style.webkitTransform = scaleString;
     headerTitles.style.transform = scaleString;
-	
-	console.log(main);
-	
+
     // Add a shadow to the header.
+    console.log(main.scrollTop);
     if (main.scrollTop > 70)
       document.body.classList.add('raised');
     else
@@ -357,11 +375,11 @@ APP.Main = (function() {
     storyStart += count;
 
   }
-  
+
   function isElementInViewport (el) {
-	 
+
 	var rect = el.getBoundingClientRect();
-    
+
 	return (
         rect.top >= 0 &&
         rect.left >= 0 &&
@@ -370,7 +388,7 @@ APP.Main = (function() {
     );
   }
 
-  
+
   // Bootstrap in the stories.
   APP.Data.getTopStories(function(data) {
     stories = data;
