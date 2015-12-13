@@ -269,21 +269,24 @@ function colorizeAndScaleStories() {
     var scoreLocation_width = [];
     var saturation = [];
     var viewportelements = [];
+
     for (var s=0; s < storyElements.length; s++) {
-    	story_array.push(storyElements[s]);
+    if (isElementInViewport(storyElements[s])) {
+    		viewportelements.push(storyElements[s]);
+    	}
+    }
+
+    for (var s=0; s < viewportelements.length; s++){
+    	story_array.push(viewportelements[s]);
     	score.push(story_array[s].querySelector('.story__score'));
     	title.push(story_array[s].querySelector('.story__title'));
     	score_bounding_box = score[s].getBoundingClientRect();
     	scoreLocations_top.push(score_bounding_box.top - bodyPosition);
     	scoreLocation_width.push(score_bounding_box.width);
     	saturation.push((100 * ((scoreLocation_width[s] - 38) / 2)));
-    	if (isElementInViewport(storyElements[s])) {
-    		viewportelements.push(storyElements[s]);
-    	}
     }
-    console.log(viewportelements)
 
-    for (var s = 0; s < storyElements.length; s++) {
+    for (var s = 0; s < viewportelements.length; s++) {
       //var score = story_array[s].querySelector('.story__score');
       //var title = story_array[s].querySelector('.story__title');
 
@@ -331,7 +334,6 @@ function colorizeAndScaleStories() {
     headerTitles.style.transform = scaleString;
 
     // Add a shadow to the header.
-    console.log(main.scrollTop);
     if (main.scrollTop > 70)
       document.body.classList.add('raised');
     else
