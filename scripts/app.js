@@ -260,8 +260,6 @@ function colorizeAndScaleStories() {
     var height = main.offsetHeight;
     var mainPosition = main.getBoundingClientRect();
     var bodyPosition = document.body.getBoundingClientRect().top;
-    // It does seem awfully broad to change all the
-    // colors every time!
     var story_array = [];
     var score = [];
     var title = [];
@@ -287,22 +285,13 @@ function colorizeAndScaleStories() {
     }
 
     for (var s = 0; s < viewportelements.length; s++) {
-      //var score = story_array[s].querySelector('.story__score');
-      //var title = story_array[s].querySelector('.story__title');
 
-      // Base the scale on the y position of the score.
-
-      //var scoreLocation = score[s].getBoundingClientRect().top - bodyPosition;
       var scale = Math.min(1, 1 - (0.05 * ((scoreLocations_top[s] - 170) / height)));
       var opacity = Math.min(1, 1 - (0.5 * ((scoreLocations_top[s] - 170) / height)));
 
       score[s].style.width = (scale * 40) + 'px';
       score[s].style.height = (scale * 40) + 'px';
       score[s].style.lineHeight = (scale * 40) + 'px';
-
-      // Now figure out how wide it is and use that to saturate it.
-      //scoreLocation = score[s].getBoundingClientRect();
-      //var saturation = (100 * ((scoreLocation_width[s] - 38) / 2));
 
       score[s].style.backgroundColor = 'hsl(42, ' + saturation[s] + '%, 50%)';
       title[s].style.opacity = opacity;
@@ -321,10 +310,12 @@ function colorizeAndScaleStories() {
   });
 
   main.addEventListener('scroll', function() {
-
+  	var mainscrollTop = main.scrollTop;
+  	var mainscrollHeight = main.scrollHeight;
+  	var mainoffsetHeight = main.offsetHeight;
     var header = $('header');
     var headerTitles = header.querySelector('.header__title-wrapper');
-    var scrollTopCapped = Math.min(70, main.scrollTop);
+    var scrollTopCapped = Math.min(70, mainscrollTop);
     var scaleString = 'scale(' + (1 - (scrollTopCapped / 300)) + ')';
 
     colorizeAndScaleStories();
@@ -334,21 +325,21 @@ function colorizeAndScaleStories() {
     headerTitles.style.transform = scaleString;
 
     // Add a shadow to the header.
-    if (main.scrollTop > 70)
+    if (mainscrollTop > 70)
       document.body.classList.add('raised');
     else
       document.body.classList.remove('raised');
 
     // Check if we need to load the next batch of stories.
-    var loadThreshold = (main.scrollHeight - main.offsetHeight -
+    var loadThreshold = (mainscrollHeight - mainoffsetHeight -
         LAZY_LOAD_THRESHOLD);
-    if (main.scrollTop > loadThreshold)
+    if (mainscrollTop > loadThreshold)
       loadStoryBatch();
   });
 
   function loadStoryBatch() {
 
-    if (storyLoadCount > 0)
+    if (storyLoadCount > 50)
       return;
 
     storyLoadCount = count;
