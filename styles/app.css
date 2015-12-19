@@ -68,6 +68,7 @@ a {
   padding: 0 0 0 72px;
   z-index: 1;
   position: fixed;
+  will-change: transform;
 }
 
 .header__title-wrapper {

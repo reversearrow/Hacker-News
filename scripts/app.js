@@ -337,14 +337,20 @@ function colorizeAndScaleStories() {
       loadStoryBatch();
   });
 
+
+  function initialStoryBatch() {
+
+  }
+
   function loadStoryBatch() {
 
-    if (storyLoadCount > 50)
+    if (storyLoadCount > 15)
       return;
 
     storyLoadCount = count;
 
     var end = storyStart + count;
+    console.log(stories)
     for (var i = storyStart; i < end; i++) {
 
       if (i >= stories.length)
@@ -361,7 +367,6 @@ function colorizeAndScaleStories() {
         time: 0
       });
       main.appendChild(story);
-
       APP.Data.getStoryById(stories[i], onStoryData.bind(this, key));
     }
 
