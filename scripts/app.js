@@ -25,6 +25,9 @@ APP.Main = (function() {
   var main = $('main');
   var inDetails = false;
   var storyLoadCount = 0;
+  var testcount = 0;
+  //Created a new object to store the stories values as key-pair
+  var storyobject = {};
   var localeData = {
     data: {
       intl: {
@@ -65,25 +68,17 @@ APP.Main = (function() {
 
     // This seems odd. Surely we could just select the story
     // directly rather than looping through all of them.
-    var storyElements = document.querySelectorAll('.story');
-
-    for (var i = 0; i < storyElements.length; i++) {
-
-      if (storyElements[i].getAttribute('id') === 's-' + key) {
-
+    //console.log(details.id,key);
+        var storyElements = storyobject[key];
         details.time *= 1000;
-        var story = storyElements[i];
+        var story = storyElements;
         var html = storyTemplate(details);
         story.innerHTML = html;
         story.addEventListener('click', onStoryClick.bind(this, details));
         story.classList.add('clickable');
 
-
         // Tick down. When zero we can batch in the next load.
         storyLoadCount--;
-
-      }
-    }
 
     // Colorize on complete.
     if (storyLoadCount === 0)
@@ -350,7 +345,6 @@ function colorizeAndScaleStories() {
     storyLoadCount = count;
 
     var end = storyStart + count;
-    console.log(stories)
     for (var i = storyStart; i < end; i++) {
 
       if (i >= stories.length)
@@ -367,9 +361,9 @@ function colorizeAndScaleStories() {
         time: 0
       });
       main.appendChild(story);
+      storyobject[key] = story;
       APP.Data.getStoryById(stories[i], onStoryData.bind(this, key));
     }
-
     storyStart += count;
 
   }
