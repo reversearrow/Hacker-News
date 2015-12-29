@@ -66,7 +66,7 @@ a {
   font-size: 40px;
   font-weight: 400;
   padding: 0 0 0 72px;
-  z-index: 1;
+  /*z-index: 1;*/
   position: fixed;
   will-change: transform;
 }
@@ -87,7 +87,6 @@ a {
 
 .header__subhead {
   font-size: 20px;
-  font-weight: 400;
   padding: 0;
   margin: 0;
   opacity: 0.54;
@@ -98,6 +97,7 @@ body.details-active .story__by,
 body.details-active .story__score {
   transition: opacity 0.5s ease-out;
   opacity: 0 !important;
+  /*will-change: transform;*/
 }
 
 body.details-active .story {
@@ -117,7 +117,7 @@ main {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  z-index: 0;
+  /*z-index: 0;*/
   will-change: transform;
 }
 
@@ -153,6 +153,7 @@ main.loading {
   min-height: 90px;
   cursor: pointer;
   transition: all 0.4s ease-out;
+  /*will-change: transform;*/
 }
 
 .story:after {
@@ -165,9 +166,11 @@ main.loading {
   border-bottom: 1px solid #dedede;
 }
 
+/*
 .story:nth-last-child(-n+1):after {
   display: none;
 }
+*/
 
 .story__title {
   font-size: 20px;
@@ -176,6 +179,7 @@ main.loading {
   margin: 0;
   padding: 0;
   line-height: 32px;
+  /*will-change: transform;*/
 }
 
 .story__by,
@@ -199,11 +203,7 @@ main.loading {
   top: 16px;
   text-align: center;
   line-height: 40px;
-
-  box-shadow:
-      0px 2px 5px 0px rgba(0, 0, 0, 0.06),
-      0px 2px 5px 0px rgba(0, 0, 0, 0.08),
-      0px 2px 7px 0px rgba(0, 0, 0, 0.10);
+  /*will-change: transform;*/
 }
 
 .story-details {
@@ -234,18 +234,15 @@ main.loading {
   height: 100%;
   background: white;
   z-index: 2;
-  box-shadow:
-      0px 2px 5px 0px rgba(0, 0, 0, 0.06),
-      0px 2px 5px 0px rgba(0, 0, 0, 0.08),
-      0px 2px 7px 0px rgba(0, 0, 0, 0.10);
-
   overflow: hidden;
   transition: opacity 0.3s ease-out;
+  /*will-change: transform;*/
 }
 
+
 .story-details * {
-  will-change: transform;
-  transform: translateZ(0);
+  PLAYER_WIDTH: transform;
+  /*transform: translateZ(0)*/;
 }
 
 .story-details__content {
