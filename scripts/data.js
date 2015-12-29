@@ -29,7 +29,6 @@ APP.Data = (function() {
   function getStoryById(id, callback) {
 
     var storyURL = HN_STORYDETAILS_URL.replace(/\[ID\]/, id);
-
     request(storyURL, function(evt) {
       callback(evt.target.response);
     });
@@ -38,7 +37,6 @@ APP.Data = (function() {
   function getStoryComment(id, callback) {
 
     var storyCommentURL = HN_STORYDETAILS_URL.replace(/\[ID\]/, id);
-
     request(storyCommentURL, function(evt) {
       callback(evt.target.response);
     });
