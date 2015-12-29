@@ -21,13 +21,15 @@ APP.Main = (function() {
 
   var stories = null;
   var storyStart = 0;
-  var count = 50;
+  var count = 100;
   var main = $('main');
   var inDetails = false;
   var storyLoadCount = 0;
   var testcount = 0;
   //Created a new object to store the stories values as key-pair
   var storyobject = {};
+  var testobject = {};
+  var result = {};
   var localeData = {
     data: {
       intl: {
@@ -68,21 +70,20 @@ APP.Main = (function() {
 
     // This seems odd. Surely we could just select the story
     // directly rather than looping through all of them.
-    //console.log(details.id,key);
-        var storyElements = storyobject[key];
-        details.time *= 1000;
+          //console.log(details.id,key);
+
+        key = "s-" + key;
+        var storyElements = document.getElementById(key);
+        //details.time *= 1000;
+
         var story = storyElements;
         var html = storyTemplate(details);
-        story.innerHTML = html;
-        story.addEventListener('click', onStoryClick.bind(this, details));
-        story.classList.add('clickable');
+        storyElements.innerHTML = html;
+        storyElements.addEventListener('click', onStoryClick.bind(this, details));
+        storyElements.classList.add('clickable');
 
         // Tick down. When zero we can batch in the next load.
         storyLoadCount--;
-
-    // Colorize on complete.
-    if (storyLoadCount === 0)
-      colorizeAndScaleStories();
   }
 
   function onStoryClick(details) {
@@ -90,7 +91,7 @@ APP.Main = (function() {
     var storyDetails = $('sd-' + details.id);
 
     // Wait a little time then show the story details.
-    setTimeout(showStory.bind(this, details.id), 60);
+    requestAnimationFrame(showStory.bind(this, details.id));
 
     // Create and append the story. A visual change...
     // perhaps that should be in a requestAnimationFrame?
@@ -125,9 +126,9 @@ APP.Main = (function() {
       storyContent = storyDetails.querySelector('.js-content');
 
       var closeButton = storyDetails.querySelector('.js-close');
-      closeButton.addEventListener('click', hideStory.bind(this, details.id));
-
       var headerHeight = storyHeader.getBoundingClientRect().height;
+
+      closeButton.addEventListener('click', hideStory.bind(this, details.id));
       storyContent.style.paddingTop = headerHeight + 'px';
 
       if (typeof kids === 'undefined')
@@ -142,6 +143,7 @@ APP.Main = (function() {
         commentsElement.appendChild(comment);
 
         // Update the comment with the live data.
+
         APP.Data.getStoryComment(kids[k], function(commentDetails) {
 
           commentDetails.time *= 1000;
@@ -187,7 +189,7 @@ APP.Main = (function() {
 
       // Set up the next bit of the animation if there is more to do.
       if (Math.abs(left) > 0.5)
-        setTimeout(animate, 4);
+        window.requestAnimationFrame(animate);
       else
         left = 0;
 
@@ -200,8 +202,9 @@ APP.Main = (function() {
     // every few milliseconds. That's going to keep
     // it all tight. Or maybe we're doing visual changes
     // and they should be in a requestAnimationFrame
-    setTimeout(animate, 4);
+    window.requestAnimationFrame(animate);
   }
+
 
   function hideStory(id) {
 
@@ -226,7 +229,7 @@ APP.Main = (function() {
 
       // Set up the next bit of the animation if there is more to do.
       if (Math.abs(left - target) > 0.5) {
-        setTimeout(animate, 4);
+        window.requestAnimationFrame(animate);
       } else {
         left = target;
         inDetails = false;
@@ -241,7 +244,7 @@ APP.Main = (function() {
     // every few milliseconds. That's going to keep
     // it all tight. Or maybe we're doing visual changes
     // and they should be in a requestAnimationFrame
-    setTimeout(animate, 4);
+    window.requestAnimationFrame(animate);
   }
 
   /**
@@ -304,47 +307,59 @@ function colorizeAndScaleStories() {
 
   });
 
+  var header = $('header');
+  var headerTitles = header.querySelector('.header__title-wrapper');
+  var mainscrollTop = 0;
+  var mainscrollHeight = 0;
+  var mainoffsetHeight = 0;
+  var ticking = false;
+
   main.addEventListener('scroll', function() {
-  	var mainscrollTop = main.scrollTop;
-  	var mainscrollHeight = main.scrollHeight;
-  	var mainoffsetHeight = main.offsetHeight;
-    var header = $('header');
-    var headerTitles = header.querySelector('.header__title-wrapper');
+  	mainscrollTop = main.scrollTop;
+  	mainscrollHeight = main.scrollHeight;
+    mainoffsetHeight = main.offsetHeight;
+    //;
+    requestScroll();
+  });
+
+  function update() {
+    requestAnimationFrame(update);
     var scrollTopCapped = Math.min(70, mainscrollTop);
     var scaleString = 'scale(' + (1 - (scrollTopCapped / 300)) + ')';
-
-    colorizeAndScaleStories();
-
+    var loadThreshold = (mainscrollHeight - mainoffsetHeight - LAZY_LOAD_THRESHOLD);
     header.style.height = (156 - scrollTopCapped) + 'px';
     headerTitles.style.webkitTransform = scaleString;
     headerTitles.style.transform = scaleString;
-
-    // Add a shadow to the header.
+    //colorizeAndScaleStories()
     if (mainscrollTop > 70)
       document.body.classList.add('raised');
     else
       document.body.classList.remove('raised');
 
-    // Check if we need to load the next batch of stories.
-    var loadThreshold = (mainscrollHeight - mainoffsetHeight -
-        LAZY_LOAD_THRESHOLD);
     if (mainscrollTop > loadThreshold)
       loadStoryBatch();
-  });
-
-
-  function initialStoryBatch() {
-
   }
 
+  function requestScroll() {
+    if (!ticking) {
+      requestAnimationFrame(update);
+    }
+    ticking = true;
+  }
+
+
   function loadStoryBatch() {
-
-    if (storyLoadCount > 15)
+    if (storyLoadCount > 10)
       return;
-
     storyLoadCount = count;
-
     var end = storyStart + count;
+    /*
+    var worker = new Worker("scripts/worker.js");
+    worker.onmessage = function(e) {
+       console.log(e.data);
+      }
+      worker.postMessage(stories[i]);
+    */
     for (var i = storyStart; i < end; i++) {
 
       if (i >= stories.length)
@@ -361,8 +376,7 @@ function colorizeAndScaleStories() {
         time: 0
       });
       main.appendChild(story);
-      storyobject[key] = story;
-      APP.Data.getStoryById(stories[i], onStoryData.bind(this, key));
+      APP.Data.getStoryById(stories[i],onStoryData.bind(this, key));
     }
     storyStart += count;
 
@@ -371,7 +385,6 @@ function colorizeAndScaleStories() {
   function isElementInViewport (el) {
 
 	var rect = el.getBoundingClientRect();
-
 	return (
         rect.top >= 0 &&
         rect.left >= 0 &&
@@ -388,4 +401,6 @@ function colorizeAndScaleStories() {
     main.classList.remove('loading');
   });
 
+
 })();
+
