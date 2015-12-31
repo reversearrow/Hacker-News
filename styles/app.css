@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 * {
   box-sizing: border-box;
 }
@@ -27,31 +28,21 @@ html, body {
   font-weight: 400;
   color: #444;
 }
-
+/*
 html {
   overflow: hidden;
 }
+*/
 
 body {
-  display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-flex-direction: column;
-      -ms-flex-direction: column;
           flex-direction: column;
-  -webkit-flex-wrap: nowrap;
-      -ms-flex-wrap: nowrap;
-          flex-wrap: nowrap;
-  -webkit-justify-content: flex-start;
-      -ms-flex-pack: start;
+          /*flex-wrap: nowrap;*/
           justify-content: flex-start;
-  -webkit-align-items: stretch;
-      -ms-flex-align: stretch;
-          align-items: stretch;
-  -ms-flex-line-pack: stretch;
-      -webkit-align-content: stretch;
-          align-content: stretch;
+         align-items: stretch;
+          /*align-content: stretch;
   background: #ececec;
+  /*will-change: transform;*/
 }
 
 a {
@@ -64,11 +55,10 @@ a {
   background: #FF8F00;
   color: #FFF;
   font-size: 40px;
-  font-weight: 400;
   padding: 0 0 0 72px;
   /*z-index: 1;*/
-  position: fixed;
-  will-change: transform;
+  position: absolute;
+  /*will-change: transform;*/
 }
 
 .header__title-wrapper {
@@ -80,7 +70,6 @@ a {
 
 .header__title {
   font-size: 40px;
-  font-weight: 400;
   padding: 0;
   margin: 0;
 }
@@ -101,58 +90,42 @@ body.details-active .story__score {
 }
 
 body.details-active .story {
-  background: linear-gradient(to bottom, #FFF 0%, #FFF 100%);
+ /* background: linear-gradient(to bottom, #FFF 0%, #FFF 100%);*/
 }
 
+/*
 body.raised .header {
   box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.16),
       0px 2px 5px 0px rgba(0, 0, 0, 0.23);
-}
+}*/
 
 main {
   padding-top: 156px;
-  -webkit-flex: 1;
-      -ms-flex: 1;
           flex: 1;
+
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /*z-index: 0;*/
-  will-change: transform;
+  /*
+  z-index: 0;
+  will-change: transform;*/
 }
 
+/*
 main.loading {
   background: url(../images/loader.png) center center no-repeat;
   background-size: 24px 24px;
-
-  -webkit-animation-name: spin;
-          animation-name: spin;
-  -webkit-animation-duration: 500ms;
-          animation-duration: 500ms;
-  -webkit-animation-iteration-count: infinite;
-          animation-iteration-count: infinite;
-  -webkit-animation-timing-function: linear;
-          animation-timing-function: linear;
 }
-
-@-webkit-keyframes spin {
-  from { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
-  to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
-}
-
-@keyframes spin {
-  from { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
-  to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
-}
+*/
 
 .story {
   padding: 16px 16px 16px 72px;
   background: #FFF;
-  background: linear-gradient(to bottom, #FFF 0%,#F4F4F4 100%);
+  /*background: linear-gradient(to bottom, #FFF 0%,#F4F4F4 100%);*/
   position: relative;
   min-height: 90px;
   cursor: pointer;
-  transition: all 0.4s ease-out;
+  /*transition: all 0.4s ease-out;*/
   /*will-change: transform;*/
 }
 
@@ -175,7 +148,6 @@ main.loading {
 .story__title {
   font-size: 20px;
   font-weight: 500;
-  color: rgba(0,0,0,0.87);
   margin: 0;
   padding: 0;
   line-height: 32px;
@@ -184,9 +156,7 @@ main.loading {
 
 .story__by,
 .story-details__by {
-  color: rgba(0,0,0,0.54);
   font-size: 14px;
-  font-weight: 400;
   line-height: 24px;
 }
 
@@ -196,7 +166,7 @@ main.loading {
   height: 40px;
   background: #FFB300;
   border-radius: 50%;
-  color: rgba(255,255,255,0.87);
+  color: white;
   font-weight: 500;
   font-size: 13px;
   left: 16px;
@@ -207,27 +177,8 @@ main.loading {
 }
 
 .story-details {
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: column;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-flex-wrap: nowrap;
-      -ms-flex-wrap: nowrap;
-          flex-wrap: nowrap;
-  -webkit-justify-content: flex-start;
-      -ms-flex-pack: start;
-          justify-content: flex-start;
-  -webkit-align-items: stretch;
-      -ms-flex-align: stretch;
-          align-items: stretch;
-  -ms-flex-line-pack: stretch;
-      -webkit-align-content: stretch;
-          align-content: stretch;
-
   opacity: 0;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 100%;
   width: 100%;
@@ -257,10 +208,8 @@ main.loading {
   padding: 0 16px 72px 72px;
 }
 
-.story-details__title {
-  color: #FFF;
+.story-details__title  color: #FFF;
   font-size: 20px;
-  font-weight: 400;
   line-height: 24px;
 }
 
@@ -272,7 +221,6 @@ main.loading {
 .story-details__url {
   font-size: 14px;
   color: rgba(255,255,255,0.6);
-  font-weight: 400;
 }
 
 .story-details__header {
@@ -324,7 +272,6 @@ main.loading {
 }
 
 .story-details__comments-title {
-  font-weight: 400;
   margin: 0;
   padding: 48px 0 0 0;
 }
@@ -342,7 +289,7 @@ main.loading {
 footer {
   font-size: 13px;
   height: 40px;
-  background: #ececec;
+  background: #ececec
   color: #888;
   text-align: center;
   line-height: 40px;
