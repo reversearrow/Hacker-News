@@ -21,7 +21,7 @@ APP.Main = (function() {
 
   var stories = null;
   var storyStart = 0;
-  var count = 100;
+  var count = 50;
   var main = $('main');
   var inDetails = false;
   var storyLoadCount = 0;
@@ -66,25 +66,41 @@ APP.Main = (function() {
    * that should really be handled more delicately, and
    * probably in a requestAnimationFrame callback.
    */
+  var storyElements;
+  var story;
+  var html;
+  var recentupdate = false;
+
+
   function onStoryData (key, details) {
 
     // This seems odd. Surely we could just select the story
     // directly rather than looping through all of them.
           //console.log(details.id,key);
-
         key = "s-" + key;
-        var storyElements = document.getElementById(key);
-        //details.time *= 1000;
-
-        var story = storyElements;
-        var html = storyTemplate(details);
-        storyElements.innerHTML = html;
-        storyElements.addEventListener('click', onStoryClick.bind(this, details));
-        storyElements.classList.add('clickable');
+        storyElements = document.getElementById(key);
+        story = storyElements;
+        html = storyTemplate(details);
 
         // Tick down. When zero we can batch in the next load.
+        updatehtml();
+        updateStoryData(details);
         storyLoadCount--;
+
   }
+
+  function updatehtml(){
+    //requestAnimationFrame(updatehtml);
+    storyElements.innerHTML = html;
+  }
+
+  function updateStoryData(details){
+    //requestAnimationFrame(updateStoryData);
+    details.time *= 1000;
+    storyElements.addEventListener('click', onStoryClick.bind(this, details));
+    storyElements.classList.add('clickable');
+  }
+
 
   function onStoryClick(details) {
 
@@ -268,18 +284,18 @@ function colorizeAndScaleStories() {
 
     for (var s=0; s < storyElements.length; s++) {
     if (isElementInViewport(storyElements[s])) {
-    		viewportelements.push(storyElements[s]);
-    	}
+        viewportelements.push(storyElements[s]);
+      }
     }
 
     for (var s=0; s < viewportelements.length; s++){
-    	story_array.push(viewportelements[s]);
-    	score.push(story_array[s].querySelector('.story__score'));
-    	title.push(story_array[s].querySelector('.story__title'));
-    	score_bounding_box = score[s].getBoundingClientRect();
-    	scoreLocations_top.push(score_bounding_box.top - bodyPosition);
-    	scoreLocation_width.push(score_bounding_box.width);
-    	saturation.push((100 * ((scoreLocation_width[s] - 38) / 2)));
+      story_array.push(viewportelements[s]);
+      score.push(story_array[s].querySelector('.story__score'));
+      title.push(story_array[s].querySelector('.story__title'));
+      score_bounding_box = score[s].getBoundingClientRect();
+      scoreLocations_top.push(score_bounding_box.top - bodyPosition);
+      scoreLocation_width.push(score_bounding_box.width);
+      saturation.push((100 * ((scoreLocation_width[s] - 38) / 2)));
     }
 
     for (var s = 0; s < viewportelements.length; s++) {
@@ -315,32 +331,38 @@ function colorizeAndScaleStories() {
   var ticking = false;
 
   main.addEventListener('scroll', function() {
-  	mainscrollTop = main.scrollTop;
-  	mainscrollHeight = main.scrollHeight;
+    mainscrollTop = main.scrollTop;
+    mainscrollHeight = main.scrollHeight;
     mainoffsetHeight = main.offsetHeight;
     //;
     requestScroll();
   });
 
   function update() {
-    requestAnimationFrame(update);
+    ticking = false;
     var scrollTopCapped = Math.min(70, mainscrollTop);
     var scaleString = 'scale(' + (1 - (scrollTopCapped / 300)) + ')';
-    var loadThreshold = (mainscrollHeight - mainoffsetHeight - LAZY_LOAD_THRESHOLD);
+    //var loadThreshold = (mainscrollHeight - mainoffsetHeight - LAZY_LOAD_THRESHOLD);
     header.style.height = (156 - scrollTopCapped) + 'px';
     headerTitles.style.webkitTransform = scaleString;
     headerTitles.style.transform = scaleString;
     //colorizeAndScaleStories()
+
     if (mainscrollTop > 70)
       document.body.classList.add('raised');
     else
       document.body.classList.remove('raised');
 
-    if (mainscrollTop > loadThreshold)
+    if (storyLoadCount < 10)
       loadStoryBatch();
+
+    requestAnimationFrame(update);
   }
 
   function requestScroll() {
+    if (storyLoadCount > 10){
+      return;
+    }
     if (!ticking) {
       requestAnimationFrame(update);
     }
@@ -348,44 +370,28 @@ function colorizeAndScaleStories() {
   }
 
 
+
   function loadStoryBatch() {
-    if (storyLoadCount > 10)
-      return;
     storyLoadCount = count;
+    var maxload = stories.length;
     var end = storyStart + count;
-    /*
-    var worker = new Worker("scripts/worker.js");
-    worker.onmessage = function(e) {
-       console.log(e.data);
-      }
-      worker.postMessage(stories[i]);
-    */
     for (var i = storyStart; i < end; i++) {
-
-      if (i >= stories.length)
+      if (i >= maxload){
         return;
-
+      }
       var key = String(stories[i]);
       var story = document.createElement('div');
       story.setAttribute('id', 's-' + key);
       story.classList.add('story');
-      story.innerHTML = storyTemplate({
-        title: '...',
-        score: '-',
-        by: '...',
-        time: 0
-      });
       main.appendChild(story);
       APP.Data.getStoryById(stories[i],onStoryData.bind(this, key));
     }
     storyStart += count;
-
   }
 
   function isElementInViewport (el) {
-
-	var rect = el.getBoundingClientRect();
-	return (
+  var rect = el.getBoundingClientRect();
+  return (
         rect.top >= 0 &&
         rect.left >= 0 &&
         rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
@@ -403,4 +409,3 @@ function colorizeAndScaleStories() {
 
 
 })();
-
