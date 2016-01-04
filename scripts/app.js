@@ -21,7 +21,7 @@ APP.Main = (function() {
 
   var stories = null;
   var storyStart = 0;
-  var count = 50;
+  var count = 100;
   var main = $('main');
   var inDetails = false;
   var storyLoadCount = 0;
@@ -81,7 +81,7 @@ APP.Main = (function() {
         storyElements = document.getElementById(key);
         story = storyElements;
         html = storyTemplate(details);
-
+        details.time *= 1000;
         // Tick down. When zero we can batch in the next load.
         updatehtml();
         updateStoryData(details);
@@ -96,7 +96,6 @@ APP.Main = (function() {
 
   function updateStoryData(details){
     //requestAnimationFrame(updateStoryData);
-    details.time *= 1000;
     storyElements.addEventListener('click', onStoryClick.bind(this, details));
     storyElements.classList.add('clickable');
   }
@@ -107,13 +106,15 @@ APP.Main = (function() {
     var storyDetails = $('sd-' + details.id);
 
     // Wait a little time then show the story details.
-    requestAnimationFrame(showStory.bind(this, details.id));
+    setTimeout(showStory.bind(this, details.id), 60);
 
     // Create and append the story. A visual change...
     // perhaps that should be in a requestAnimationFrame?
     // And maybe, since they're all the same, I don't
     // need to make a new element every single time? I mean,
     // it inflates the DOM and I can only see one at once.
+
+
     if (!storyDetails) {
 
       if (details.url)
@@ -134,16 +135,16 @@ APP.Main = (function() {
       storyDetails.setAttribute('id', 'sd-' + details.id);
       storyDetails.classList.add('story-details');
       storyDetails.innerHTML = storyDetailsHtml;
+      console.log(storyDetails);
 
       document.body.appendChild(storyDetails);
 
       commentsElement = storyDetails.querySelector('.js-comments');
       storyHeader = storyDetails.querySelector('.js-header');
+      var headerHeight = storyHeader.getBoundingClientRect().height;
       storyContent = storyDetails.querySelector('.js-content');
 
       var closeButton = storyDetails.querySelector('.js-close');
-      var headerHeight = storyHeader.getBoundingClientRect().height;
-
       closeButton.addEventListener('click', hideStory.bind(this, details.id));
       storyContent.style.paddingTop = headerHeight + 'px';
 
@@ -159,7 +160,6 @@ APP.Main = (function() {
         commentsElement.appendChild(comment);
 
         // Update the comment with the live data.
-
         APP.Data.getStoryComment(kids[k], function(commentDetails) {
 
           commentDetails.time *= 1000;
@@ -175,6 +175,7 @@ APP.Main = (function() {
 
   }
 
+
   function showStory(id) {
 
     if (inDetails)
@@ -182,7 +183,10 @@ APP.Main = (function() {
 
     inDetails = true;
 
-    var storyDetails = $('#sd-' + id);
+    storyDetails = $('#sd-' + id);
+    var storyDetailsPosition = storyDetails.getBoundingClientRect();
+
+
     var left = null;
 
     if (!storyDetails)
@@ -194,7 +198,7 @@ APP.Main = (function() {
     function animate () {
 
       // Find out where it currently is.
-      var storyDetailsPosition = storyDetails.getBoundingClientRect();
+      //console.log("1",storyDetailsPosition);
 
       // Set the left value if we don't have one already.
       if (left === null)
@@ -218,7 +222,7 @@ APP.Main = (function() {
     // every few milliseconds. That's going to keep
     // it all tight. Or maybe we're doing visual changes
     // and they should be in a requestAnimationFrame
-    window.requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
   }
 
 
@@ -313,16 +317,6 @@ function colorizeAndScaleStories() {
   }
 
 
-  main.addEventListener('touchstart', function(evt) {
-
-    // I just wanted to test what happens if touchstart
-    // gets canceled. Hope it doesn't block scrolling on mobiles...
-    if (Math.random() > 0.97) {
-      evt.preventDefault();
-    }
-
-  });
-
   var header = $('header');
   var headerTitles = header.querySelector('.header__title-wrapper');
   var mainscrollTop = 0;
@@ -336,40 +330,28 @@ function colorizeAndScaleStories() {
     mainoffsetHeight = main.offsetHeight;
     //;
     requestScroll();
+    update();
   });
 
   function update() {
-    ticking = false;
+    if (storyLoadCount < 30)
+      requestAnimationFrame(loadStoryBatch);
+  }
+
+  function updateheader() {
     var scrollTopCapped = Math.min(70, mainscrollTop);
     var scaleString = 'scale(' + (1 - (scrollTopCapped / 300)) + ')';
-    //var loadThreshold = (mainscrollHeight - mainoffsetHeight - LAZY_LOAD_THRESHOLD);
     header.style.height = (156 - scrollTopCapped) + 'px';
     headerTitles.style.webkitTransform = scaleString;
     headerTitles.style.transform = scaleString;
-    //colorizeAndScaleStories()
-
-    if (mainscrollTop > 70)
-      document.body.classList.add('raised');
-    else
-      document.body.classList.remove('raised');
-
-    if (storyLoadCount < 10)
-      loadStoryBatch();
-
-    requestAnimationFrame(update);
   }
 
   function requestScroll() {
-    if (storyLoadCount > 10){
-      return;
+    //requestAnimationFrame(colorizeAndScaleStories);
+    if (mainscrollTop < 500){
+      requestAnimationFrame(updateheader);
     }
-    if (!ticking) {
-      requestAnimationFrame(update);
-    }
-    ticking = true;
   }
-
-
 
   function loadStoryBatch() {
     storyLoadCount = count;
@@ -398,14 +380,11 @@ function colorizeAndScaleStories() {
         rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
     );
   }
-
-
   // Bootstrap in the stories.
+
   APP.Data.getTopStories(function(data) {
     stories = data;
-    loadStoryBatch();
-    main.classList.remove('loading');
+    requestAnimationFrame(loadStoryBatch);
   });
-
 
 })();

@@ -21,7 +21,8 @@ APP.Data = (function() {
   var HN_STORYDETAILS_URL = HN_API_BASE + '/v0/item/[ID].json';
 
   function getTopStories(callback) {
-    request(HN_TOPSTORIES_URL, function(evt) {
+
+     request(HN_TOPSTORIES_URL, function(evt) {
       callback(evt.target.response);
     });
   }
