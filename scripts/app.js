@@ -106,14 +106,13 @@ APP.Main = (function() {
     var storyDetails = $('sd-' + details.id);
 
     // Wait a little time then show the story details.
-    setTimeout(showStory.bind(this, details.id), 60);
+    requestAnimationFrame(showStory.bind(this, details.id));
 
     // Create and append the story. A visual change...
     // perhaps that should be in a requestAnimationFrame?
     // And maybe, since they're all the same, I don't
     // need to make a new element every single time? I mean,
     // it inflates the DOM and I can only see one at once.
-
 
     if (!storyDetails) {
 
@@ -135,12 +134,13 @@ APP.Main = (function() {
       storyDetails.setAttribute('id', 'sd-' + details.id);
       storyDetails.classList.add('story-details');
       storyDetails.innerHTML = storyDetailsHtml;
-      console.log(storyDetails);
-
+      //console.log(storyDetails);
+      console.log("Test");
       document.body.appendChild(storyDetails);
 
       commentsElement = storyDetails.querySelector('.js-comments');
       storyHeader = storyDetails.querySelector('.js-header');
+
       var headerHeight = storyHeader.getBoundingClientRect().height;
       storyContent = storyDetails.querySelector('.js-content');
 
@@ -176,6 +176,8 @@ APP.Main = (function() {
   }
 
 
+  var storyDetailsPosition;
+
   function showStory(id) {
 
     if (inDetails)
@@ -184,15 +186,14 @@ APP.Main = (function() {
     inDetails = true;
 
     storyDetails = $('#sd-' + id);
-    var storyDetailsPosition = storyDetails.getBoundingClientRect();
-
+    storyDetailsPosition = storyDetails.getBoundingClientRect();
 
     var left = null;
 
     if (!storyDetails)
       return;
 
-    document.body.classList.add('details-active');
+    //document.body.classList.add('details-active');
     storyDetails.style.opacity = 1;
 
     function animate () {
@@ -209,7 +210,7 @@ APP.Main = (function() {
 
       // Set up the next bit of the animation if there is more to do.
       if (Math.abs(left) > 0.5)
-        window.requestAnimationFrame(animate);
+          requestAnimationFrame(animate);
       else
         left = 0;
 
@@ -223,6 +224,7 @@ APP.Main = (function() {
     // it all tight. Or maybe we're doing visual changes
     // and they should be in a requestAnimationFrame
     requestAnimationFrame(animate);
+    console.log("Test");
   }
 
 
@@ -339,11 +341,9 @@ function colorizeAndScaleStories() {
   }
 
   function updateheader() {
-    var scrollTopCapped = Math.min(70, mainscrollTop);
-    var scaleString = 'scale(' + (1 - (scrollTopCapped / 300)) + ')';
-    header.style.height = (156 - scrollTopCapped) + 'px';
-    headerTitles.style.webkitTransform = scaleString;
-    headerTitles.style.transform = scaleString;
+    header.style.height = (156 - Math.min(70, mainscrollTop)) + 'px';
+    headerTitles.style.webkitTransform = 'scale(' + (1 - (scrollTopCapped / 300)) + ')';
+    headerTitles.style.transform = 'scale(' + (1 - (scrollTopCapped / 300)) + ')';
   }
 
   function requestScroll() {
