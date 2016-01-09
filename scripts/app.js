@@ -341,9 +341,11 @@ function colorizeAndScaleStories() {
   }
 
   function updateheader() {
+    var scrollTopCapped = Math.min(70, mainscrollTop);
+    var scaleString = 'scale(' + (1 - (scrollTopCapped / 300)) + ')';
     header.style.height = (156 - Math.min(70, mainscrollTop)) + 'px';
-    headerTitles.style.webkitTransform = 'scale(' + (1 - (scrollTopCapped / 300)) + ')';
-    headerTitles.style.transform = 'scale(' + (1 - (scrollTopCapped / 300)) + ')';
+    headerTitles.style.webkitTransform = scaleString;
+    headerTitles.style.transform = scaleString;
   }
 
   function requestScroll() {
