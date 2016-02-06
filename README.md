@@ -1,7 +1,5 @@
 # Udacity 60fps Course Samples
 
-**Please note: this code is intended for you to hone your debugging skills. It contains a lot of code that you should not use in production!**
-
 This is a simple web app that shows the top stories from [Hacker News](https://news.ycombinator.com/news) via [its API](http://blog.ycombinator.com/hacker-news-api).
 
 Unfortunately it has a bunch of performance issues, such as:
@@ -19,3 +17,9 @@ Your mission is to find and fix the issues, and make the app gloriously performa
 See /LICENSE for more.
 
 This is not a Google product.
+
+Check the website before:
+http://udacity.github.io/news-aggregator/
+
+After Optmization:
+http://reversearrow.github.io/Hacker-News/
