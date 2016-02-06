@@ -18,7 +18,7 @@ See /LICENSE for more.
 
 This is not a Google product.
 
-Check the website before:
+Check the website before optimization:
 http://udacity.github.io/news-aggregator/
 
 After Optmization:
